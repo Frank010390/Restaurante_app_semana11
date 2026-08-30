@@ -1,7 +1,12 @@
 [
-  {
-    "identificacion": "1201201201",
-    "nombre": "Maria Lopez",
-    "correo": "marialopez@gmail.com"
-  }
+    {
+        "identificacion": "1201201201",
+        "nombre": "Maria Lopez",
+        "correo": "marialopez@gmail.com"
+    },
+    {
+        "identificacion": "1234567890",
+        "nombre": "Juan Perez ",
+        "correo": "Juan@gmail.com"
+    }
 ]

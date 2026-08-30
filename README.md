@@ -1,54 +1,66 @@
-# Restaurante App — Semana 11
+# 🍽️ Restaurante App — Semana 11
 
 ## Estudiante
 FRANK MARLON CARRIEL SANTOS
 
-## Descripción
-Sistema de gestión de productos, usuarios y ventas con persistencia en archivos JSON.
+## Descripción del sistema
+Sistema de administración de productos, usuarios y ventas para un restaurante. Permite registrar productos con stock, registrar usuarios, realizar ventas que relacionen usuarios y productos, controlar el stock disponible, consultar el historial de compras de un usuario y conservar toda la información mediante persistencia en archivos JSON.
 
-## Estructura
-- `datos/` → Archivos JSON generados automáticamente
-- `modelos/` → Clases: Producto, Usuario, Venta
-- `servicios/` → Lógica de negocio y lectura/escritura JSON
-- `main.py` → Menú e interacción por consola
-
-## Ejecución
-```bash
-
-python main.py
+## Estructura del proyecto
 Restaurante_app_semana11/
-├── 📂 datos/ (vacía)
-├── 📂 modelos/
+├── datos/
+│ ├── productos.json ← Se genera automáticamente
+│ ├── usuarios.json ← Se genera automáticamente
+│ └── ventas.json ← Se genera automáticamente
+├── modelos/
 │ ├── init.py
-│ ├── producto.py
-│ ├── usuario.py
-│ └── venta.py
-├── 📂 servicios/
+│ ├── producto.py ← Entidad Producto con control de stock
+│ ├── usuario.py ← Entidad Usuario
+│ └── venta.py ← Entidad Venta (relación Usuario–Producto)
+├── servicios/
 │ ├── init.py
-│ ├── archivo_servicio.py
-│ └── restaurante.py
-├── main.py
-└── README.md
-Uso del sistema
+│ ├── archivo_servicio.py ← Lectura y escritura de los 3 archivos JSON
+│ └── restaurante.py ← Lógica de negocio, colecciones y reglas
+├── main.py ← Menú e interacción por consola
+└── README.md ← Documentación
 
-Al ejecutar el programa aparecerá un menú con las siguientes opciones:
+## Funcionamiento del Stock
+Cada producto maneja una cantidad disponible (`stock`). Al realizar una venta, el sistema valida:
+- Que la cantidad solicitada sea mayor a cero
+- Que exista stock suficiente
+- Si la venta es válida → se resta automáticamente del stock
+- El stock nunca puede ser negativo
 
-1. Registrar producto → Ingresa código, nombre, precio y stock
+## Relación Usuario — Producto mediante Venta
+Una venta representa la relación entre:
+- **Usuario**: quien realiza la compra (por su identificación)
+- **Producto**: lo que se compra (por su ID)
+- **Cantidad**: unidades adquiridas
 
-2. Registrar usuario → Ingresa identificación, nombre y correo
+### Flujo de una venta:
+1. Se verifica que el usuario exista
+2. Se verifica que el producto exista
+3. Se valida cantidad mayor a cero
+4. Se comprueba stock suficiente
+5. ✅ Si todo es válido → se crea la Venta → se resta stock → se guardan cambios
 
-3. Listar productos → Muestra todos los productos registrados
+## Persistencia de datos
+El sistema guarda automáticamente:
+- **productos.json** → después de agregar producto o realizar venta
+- **usuarios.json** → después de registrar un usuario
+- **ventas.json** → después de cada venta realizada
 
-4. Realizar venta → Selecciona usuario, producto y cantidad
+Al iniciar el programa se leen los tres archivos y se reconstruyen automáticamente los objetos.
 
-5. Consultar ventas de un usuario → Muestra el historial de compras
+## Excepciones controladas
+| Excepción | Situación | Respuesta |
+|---|---|---|
+| `FileNotFoundError` | Archivo aún no creado | ✅ Inicia con lista vacía |
+| `json.JSONDecodeError` | Archivo corrupto o inválido | ⚠️ Avisa e inicia vacío |
+| `PermissionError` | Sin permisos de lectura/escritura | ❌ Muestra mensaje y continúa |
+| `KeyError` | Registro incompleto | ⚠️ Omite solo ese registro |
+| `ValueError` | Datos inválidos (precio, cantidad) | ⚠️ Rechaza la operación |
 
-6. Salir → Cierra el programa
-
-Notas
-
-* Los datos se guardan automáticamente en la carpeta datos/
-
-* Si la carpeta datos/ no existe, se crea automáticamente
-
-* Al volver a ejecutar el programa, los datos se cargan automáticamente
+## Ejecución del programa
+```bash
+python main.py

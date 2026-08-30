@@ -1,14 +1,10 @@
 [
-  {
-    "codigo": "P01",
-    "nombre": "Hamburguesa",
-    "precio": 5.5,
-    "stock": 15
-  },
-  {
-    "codigo": "P02",
-    "nombre": "Papas Fritas",
-    "precio": 2.5,
-    "stock": 18
-  }
+    {
+        "id_producto": 1,
+        "nombre": "Hamburguesa",
+        "precio": 8.0,
+        "categoria": "Comida",
+        "stock": 4,
+        "disponible": true
+    }
 ]

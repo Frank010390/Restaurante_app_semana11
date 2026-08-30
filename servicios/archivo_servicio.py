@@ -1,61 +1,151 @@
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
 import json
-from typing import List
-
+import os
 from modelos.producto import Producto
 from modelos.usuario import Usuario
 from modelos.venta import Venta
 
-RUTA_PRODUCTOS = Path("datos/productos.json")
-RUTA_USUARIOS = Path("datos/usuarios.json")
-RUTA_VENTAS = Path("datos/ventas.json")
 
+class ArchivoServicio:
+    def __init__(self, carpeta_datos: str = "datos"):
+        self.carpeta_datos = carpeta_datos
+        if not os.path.exists(self.carpeta_datos):
+            os.makedirs(self.carpeta_datos)
 
-def _leer_archivo(ruta):
-    if not ruta.exists():
-        return []
-    try:
-        with open(ruta, "r", encoding="utf-8") as archivo:
-            contenido = archivo.read().strip()
-            if not contenido:
-                return []
-            return json.loads(contenido)
-    except:
-        return []
+    # ─────────────── PRODUCTOS ───────────────
+    def guardar_productos(self, productos: list) -> bool:
+        ruta = os.path.join(self.carpeta_datos, "productos.json")
+        try:
+            datos = [p.a_diccionario() for p in productos]
+            with open(ruta, "w", encoding="utf-8") as f:
+                json.dump(datos, f, indent=4, ensure_ascii=False)
+            return True
+        except PermissionError:
+            print("❌ Sin permisos para escribir productos.json")
+            return False
+        except Exception as e:
+            print(f"❌ Error al guardar productos: {e}")
+            return False
 
+    def cargar_productos(self) -> list:
+        ruta = os.path.join(self.carpeta_datos, "productos.json")
+        productos = []
+        if not os.path.exists(ruta):
+            print("ℹ️ Sin archivo productos.json → iniciando vacío")
+            return productos
+        try:
+            with open(ruta, "r", encoding="utf-8") as f:
+                try:
+                    datos = json.load(f)
+                except json.JSONDecodeError:
+                    print("⚠️ productos.json corrupto → iniciando vacío")
+                    return productos
+            for item in datos:
+                try:
+                    p = Producto(
+                        id_producto=item["id_producto"],
+                        nombre=item["nombre"],
+                        precio=item["precio"],
+                        categoria=item["categoria"],
+                        stock=item.get("stock", 0),
+                        disponible=item.get("disponible", True)
+                    )
+                    productos.append(p)
+                except KeyError as falta:
+                    print(f"⚠️ Producto sin campo {falta} → omitido")
+                except ValueError as e:
+                    print(f"⚠️ Datos inválidos en producto: {e} → omitido")
+        except FileNotFoundError:
+            print("ℹ️ Sin archivo productos.json")
+        except PermissionError:
+            print("❌ Sin permisos para leer productos.json")
+        return productos
 
-def _escribir_archivo(ruta, objetos):
-    try:
-        ruta.parent.mkdir(parents=True, exist_ok=True)
-        diccionarios = [obj.convertir_a_diccionario() for obj in objetos]
-        with open(ruta, "w", encoding="utf-8") as archivo:
-            json.dump(diccionarios, archivo, indent=2, ensure_ascii=False)
-        return True
-    except:
-        return False
+    # ─────────────── USUARIOS ───────────────
+    def guardar_usuarios(self, usuarios: list) -> bool:
+        ruta = os.path.join(self.carpeta_datos, "usuarios.json")
+        try:
+            datos = [u.a_diccionario() for u in usuarios]
+            with open(ruta, "w", encoding="utf-8") as f:
+                json.dump(datos, f, indent=4, ensure_ascii=False)
+            return True
+        except PermissionError:
+            print("❌ Sin permisos para escribir usuarios.json")
+            return False
+        except Exception as e:
+            print(f"❌ Error al guardar usuarios: {e}")
+            return False
 
+    def cargar_usuarios(self) -> list:
+        ruta = os.path.join(self.carpeta_datos, "usuarios.json")
+        usuarios = []
+        if not os.path.exists(ruta):
+            print("ℹ️ Sin archivo usuarios.json → iniciando vacío")
+            return usuarios
+        try:
+            with open(ruta, "r", encoding="utf-8") as f:
+                try:
+                    datos = json.load(f)
+                except json.JSONDecodeError:
+                    print("⚠️ usuarios.json corrupto → iniciando vacío")
+                    return usuarios
+            for item in datos:
+                try:
+                    u = Usuario(
+                        identificacion=item["identificacion"],
+                        nombre=item["nombre"],
+                        correo=item["correo"]
+                    )
+                    usuarios.append(u)
+                except KeyError as falta:
+                    print(f"⚠️ Usuario sin campo {falta} → omitido")
+            return usuarios
+        except FileNotFoundError:
+            print("ℹ️ Sin archivo usuarios.json")
+        except PermissionError:
+            print("❌ Sin permisos para leer usuarios.json")
+        return usuarios
 
-def cargar_productos():
-    datos = _leer_archivo(RUTA_PRODUCTOS)
-    return [Producto.reconstruir_desde_diccionario(item) for item in datos]
+    # ─────────────── VENTAS ───────────────
+    def guardar_ventas(self, ventas: list) -> bool:
+        ruta = os.path.join(self.carpeta_datos, "ventas.json")
+        try:
+            datos = [v.a_diccionario() for v in ventas]
+            with open(ruta, "w", encoding="utf-8") as f:
+                json.dump(datos, f, indent=4, ensure_ascii=False)
+            return True
+        except PermissionError:
+            print("❌ Sin permisos para escribir ventas.json")
+            return False
+        except Exception as e:
+            print(f"❌ Error al guardar ventas: {e}")
+            return False
 
-def guardar_productos(productos):
-    return _escribir_archivo(RUTA_PRODUCTOS, productos)
-
-def cargar_usuarios():
-    datos = _leer_archivo(RUTA_USUARIOS)
-    return [Usuario.reconstruir_desde_diccionario(item) for item in datos]
-
-def guardar_usuarios(usuarios):
-    return _escribir_archivo(RUTA_USUARIOS, usuarios)
-
-def cargar_ventas():
-    datos = _leer_archivo(RUTA_VENTAS)
-    return [Venta.reconstruir_desde_diccionario(item) for item in datos]
-
-def guardar_ventas(ventas):
-    return _escribir_archivo(RUTA_VENTAS, ventas)
+    def cargar_ventas(self) -> list:
+        ruta = os.path.join(self.carpeta_datos, "ventas.json")
+        ventas = []
+        if not os.path.exists(ruta):
+            print("ℹ️ Sin archivo ventas.json → iniciando vacío")
+            return ventas
+        try:
+            with open(ruta, "r", encoding="utf-8") as f:
+                try:
+                    datos = json.load(f)
+                except json.JSONDecodeError:
+                    print("⚠️ ventas.json corrupto → iniciando vacío")
+                    return ventas
+            for item in datos:
+                try:
+                    v = Venta(
+                        usuario_id=item["usuario_id"],
+                        producto_codigo=item["producto_codigo"],
+                        cantidad=item["cantidad"]
+                    )
+                    ventas.append(v)
+                except KeyError as falta:
+                    print(f"⚠️ Venta sin campo {falta} → omitida")
+            return ventas
+        except FileNotFoundError:
+            print("ℹ️ Sin archivo ventas.json")
+        except PermissionError:
+            print("❌ Sin permisos para leer ventas.json")
+        return ventas

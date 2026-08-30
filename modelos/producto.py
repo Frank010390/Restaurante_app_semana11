@@ -1,32 +1,29 @@
 class Producto:
-    def __init__(self, codigo: str, nombre: str, precio: float, stock: int = 0):
-        self.codigo = codigo
+    def __init__(self, id_producto: int, nombre: str, precio: float, categoria: str,
+                 stock: int = 0, disponible: bool = True):
+        self.id_producto = id_producto
         self.nombre = nombre
         self.precio = precio
+        self.categoria = categoria
         self.stock = stock
-        if self.stock < 0:
-            raise ValueError("El stock no puede ser negativo")
+        self.disponible = disponible
 
-    def vender(self, cantidad: int) -> None:
-        if cantidad <= 0:
-            raise ValueError("La cantidad a vender debe ser mayor a cero")
-        if self.stock < cantidad:
-            raise ValueError("Stock insuficiente")
-        self.stock -= cantidad
+    def vender(self, cantidad: int) -> bool:
+        if cantidad > 0 and self.stock >= cantidad:
+            self.stock -= cantidad
+            return True
+        return False
 
-    def convertir_a_diccionario(self) -> dict:
+    def a_diccionario(self) -> dict:
         return {
-            "codigo": self.codigo,
+            "id_producto": self.id_producto,
             "nombre": self.nombre,
             "precio": self.precio,
-            "stock": self.stock
+            "categoria": self.categoria,
+            "stock": self.stock,
+            "disponible": self.disponible
         }
 
-    @classmethod
-    def reconstruir_desde_diccionario(cls, datos: dict):
-        return cls(
-            codigo=datos["codigo"],
-            nombre=datos["nombre"],
-            precio=datos["precio"],
-            stock=datos["stock"]
-        )
+    def __str__(self) -> str:
+        estado = "✅ Disponible" if self.disponible and self.stock > 0 else "❌ Agotado"
+        return f"ID: {self.id_producto} | {self.nombre} | ${self.precio:.2f} | Stock: {self.stock} | {self.categoria} | {estado}"

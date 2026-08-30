@@ -4,17 +4,12 @@ class Usuario:
         self.nombre = nombre
         self.correo = correo
 
-    def convertir_a_diccionario(self) -> dict:
+    def a_diccionario(self) -> dict:
         return {
             "identificacion": self.identificacion,
             "nombre": self.nombre,
             "correo": self.correo
         }
 
-    @classmethod
-    def reconstruir_desde_diccionario(cls, datos: dict):
-        return cls(
-            identificacion=datos["identificacion"],
-            nombre=datos["nombre"],
-            correo=datos["correo"]
-        )
+    def __str__(self) -> str:
+        return f"ID: {self.identificacion} | Nombre: {self.nombre} | Correo: {self.correo}"
