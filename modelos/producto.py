@@ -1,29 +1,23 @@
 class Producto:
-    def __init__(self, id_producto: int, nombre: str, precio: float, categoria: str,
-                 stock: int = 0, disponible: bool = True):
-        self.id_producto = id_producto
+    def __init__(self, codigo, nombre, precio, stock):
+        self.codigo = codigo
         self.nombre = nombre
         self.precio = precio
-        self.categoria = categoria
         self.stock = stock
-        self.disponible = disponible
 
-    def vender(self, cantidad: int) -> bool:
-        if cantidad > 0 and self.stock >= cantidad:
-            self.stock -= cantidad
-            return True
-        return False
-
-    def a_diccionario(self) -> dict:
+    def a_diccionario(self):
         return {
-            "id_producto": self.id_producto,
+            "codigo": self.codigo,
             "nombre": self.nombre,
             "precio": self.precio,
-            "categoria": self.categoria,
-            "stock": self.stock,
-            "disponible": self.disponible
+            "stock": self.stock
         }
 
-    def __str__(self) -> str:
-        estado = "✅ Disponible" if self.disponible and self.stock > 0 else "❌ Agotado"
-        return f"ID: {self.id_producto} | {self.nombre} | ${self.precio:.2f} | Stock: {self.stock} | {self.categoria} | {estado}"
+    @classmethod
+    def desde_diccionario(cls, datos):
+        return cls(
+            datos["codigo"],
+            datos["nombre"],
+            datos["precio"],
+            datos["stock"]
+        )

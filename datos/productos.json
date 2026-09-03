@@ -1,10 +1,32 @@
 [
-    {
-        "id_producto": 1,
-        "nombre": "Hamburguesa",
-        "precio": 8.0,
-        "categoria": "Comida",
-        "stock": 4,
-        "disponible": true
-    }
+  {
+    "codigo": "P001",
+    "nombre": "Arroz con pollo ",
+    "precio": 7.5,
+    "stock": 30
+  },
+  {
+    "codigo": "P002",
+    "nombre": "Seco de Chivo",
+    "precio": 9.0,
+    "stock": 25
+  },
+  {
+    "codigo": "P003",
+    "nombre": "Encebollado",
+    "precio": 5.5,
+    "stock": 36
+  },
+  {
+    "codigo": "P004",
+    "nombre": "Guatita",
+    "precio": 8.0,
+    "stock": 20
+  },
+  {
+    "codigo": "P005",
+    "nombre": "Ceviche de camaron ",
+    "precio": 10.5,
+    "stock": 15
+  }
 ]
